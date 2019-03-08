@@ -9,7 +9,6 @@
  (define NULL (foreign-value "NULL" c-pointer))
 
  (foreign-declare "#include <microhttpd.h>")
- (foreign-declare "#include <sys/socket.h>")
 
  (define-foreign-type socklen_t unsigned-int)
 
@@ -48,15 +47,16 @@
    (c-pointer (struct "MHD_Response"))))
 
  (define MHD_start_daemon
-  (foreign-lambda
+  (foreign-safe-lambda*
    (c-pointer (struct "MHD_Daemon"))
-   "MHD_start_daemon"
-   unsigned-int
-   unsigned-int
-   MHD_AcceptPolicyCallback
-   c-pointer
-   MHD_AccessHandlerCallback
-   c-pointer))
+   ((unsigned-int flags)
+    (unsigned-int port)
+    (MHD_AcceptPolicyCallback apc)
+    (c-pointer apc_cls)
+    (MHD_AccessHandlerCallback dh)
+    (c-pointer dh_cls)
+    (int opt))
+   "C_return(MHD_start_daemon(flags, port, apc, apc_cls, dh, dh_cls, opt));"))
 
  (define MHD_stop_daemon
   (foreign-lambda

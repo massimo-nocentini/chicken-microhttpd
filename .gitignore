@@ -1,3 +1,4 @@
 
+*.import.scm
 *.o
 *.so
