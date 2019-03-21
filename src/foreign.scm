@@ -32,7 +32,7 @@
 
 (define-foreign-type int-mappend (function int (int)))
 ;(define-external (foo (int x)) int (+ x 1))
-(define-external (foo (int x)) int (+ x 1))
+(define-external (foo (int x)) int (begin (display 'hello) (+ x 1)))
 
 (let* ((my-strlen (foreign-lambda* int ((c-string str))
                    "int n = 0;

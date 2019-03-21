@@ -10,6 +10,18 @@
 
  (foreign-declare "#include <microhttpd.h>")
 
+#>
+
+ struct MHD_Daemon *
+ chicken_MHD_start_daemon (unsigned int flags,
+     uint16_t port,
+     MHD_AcceptPolicyCallback apc, void *apc_cls,
+     MHD_AccessHandlerCallback dh, void *dh_cls, int opt){
+    return MHD_start_daemon(flags, port, apc, apc_cls, dh, dh_cls, opt);
+ }
+
+<#
+
  (define-foreign-type socklen_t unsigned-int)
 
  (define-foreign-type MHD_AcceptPolicyCallback
@@ -24,16 +36,16 @@
     (const c-string)
     (const c-string)
     (c-pointer size_t)
-    pointer-vector)))
+    (c-pointer (c-pointer void)))))
 
  (define MHD_create_response_from_buffer
-  (foreign-lambda
+  (foreign-safe-lambda
    (c-pointer (struct "MHD_Response"))
    "MHD_create_response_from_buffer"
    size_t c-pointer (enum "MHD_ResponseMemoryMode")))
 
  (define MHD_queue_response
-  (foreign-lambda
+  (foreign-safe-lambda
    int
    "MHD_queue_response"
    (c-pointer (struct "MHD_Connection"))
@@ -41,12 +53,12 @@
    (c-pointer (struct "MHD_Response"))))
 
  (define MHD_destroy_response
-  (foreign-lambda
+  (foreign-safe-lambda
    void
    "MHD_destroy_response"
    (c-pointer (struct "MHD_Response"))))
 
- (define MHD_start_daemon
+ #;(define MHD_start_daemon
   (foreign-safe-lambda*
    (c-pointer (struct "MHD_Daemon"))
    ((unsigned-int flags)
@@ -58,8 +70,20 @@
     (int opt))
    "C_return(MHD_start_daemon(flags, port, apc, apc_cls, dh, dh_cls, opt));"))
 
+ (define MHD_start_daemon
+  (foreign-safe-lambda
+   (c-pointer (struct "MHD_Daemon"))
+   "chicken_MHD_start_daemon"
+   unsigned-int 
+   unsigned-int
+   MHD_AcceptPolicyCallback
+   c-pointer
+   MHD_AccessHandlerCallback
+   c-pointer
+   int))
+
  (define MHD_stop_daemon
-  (foreign-lambda
+  (foreign-safe-lambda
    void
    "MHD_stop_daemon"
    (c-pointer (struct "MHD_Daemon"))))
